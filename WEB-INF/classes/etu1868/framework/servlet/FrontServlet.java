@@ -1,4 +1,4 @@
-package servlet;
+package etu1868.framework.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;

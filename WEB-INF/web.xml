@@ -4,10 +4,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
 http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 version="2.4">
-    <display-name>Spring1 test</display-name>
+    <display-name>Sprint1 : Framework</display-name>
     <servlet>
         <servlet-name>Process</servlet-name>
-        <servlet-class>servlet.FrontServlet</servlet-class>
+        <servlet-class>etu1868.framework.servlet.FrontServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Process</servlet-name>
