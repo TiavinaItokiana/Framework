@@ -10,8 +10,8 @@ public class Utilitaire
         String temp = dom.substring(dom.indexOf("/")+1);
         if(temp.contains("?"))
         {
-            temp = temp.replace("?", "");
-            param = temp.split(temp)[0];
+            temp = temp.replace("?", "//split//");
+            param = temp.split("//split//")[0];
         }
         else
         {
