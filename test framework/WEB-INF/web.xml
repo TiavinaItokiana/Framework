@@ -2,15 +2,15 @@
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
-http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" 
 version="2.4">
-    <display-name>Framework by Tiavina </display-name>
+    <display-name>my framework</display-name> 
     <servlet>
-        <servlet-name>Process</servlet-name>
-        <servlet-class>etu1868.framework.servlet.FrontServlet</servlet-class>
+        <servlet-name>FrontServlet</servlet-name> 
+        <servlet-class>etu1868.framework.servlet.FrontServlet</servlet-class> 
     </servlet>
     <servlet-mapping>
-        <servlet-name>Process</servlet-name>
+        <servlet-name>FrontServlet</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 </web-app>
