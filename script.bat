@@ -1,32 +1,18 @@
-cd framework/src
-
-javac -d . annotation/*.java 
-javac -d . etu1868/framework/servlet/*.java 
-javac -d . etu1868/framework/*.java 
+cd Framework/src
+javac -d . annotation/*.java
+javac -d . etu1868/framework/*.java
 javac -d . etu1868/framework/servlet/*.java
-javac -d . utilitaire/*.java 
-
-cd ../
-
-jar cvf framework.jar -C src/ . 
-
-copy "framework.jar" "E:\Workspace\Web Dynamique\Sprint 6\test framework\WEB-INF\lib"
-
-cd ../
-
-
-cd test framework/WEB-INF/classes/
-
-javac -cp "../lib/framework.jar" -d . model/*.java
-javac -cp "../lib/framework.jar" -d . use/*.java
-
+javac -d . helper_classes/*.java
 cd ../../
+jar cvf Framework.jar  -C Framework/src/ .
+copy "Framework.jar" "Test framework/WEB-INF/lib/"
 
-jar cvf test_Framework.war *
+cd "Test framework/WEB-INF/classes/"
+javac -cp "../lib/Framework.jar" -d . connection/*.java
+javac -cp "../lib/Framework.jar" -d . model/*.java
+cd ../../../
 
-copy "test_Framework.war" "C:\Program Files\Apache Software Foundation\Tomcat 10.0\webapps"
-
+cd "Test framework"
+jar cvf TestFramework.war *
+copy "TestFramework.war" "C:\Program Files\Apache Software Foundation\Tomcat 10.0\webapps"
 cd ../
-
-
-

@@ -1,8 +1,12 @@
 package etu1868.framework;
+
+/**
+ * Mapping
+ */
 public class Mapping {
     String className;
     String method;
-
+    
     public Mapping(String className, String method) {
         this.className = className;
         this.method = method;
@@ -24,5 +28,7 @@ public class Mapping {
         this.method = method;
     }
 
+    
+    
     
 }

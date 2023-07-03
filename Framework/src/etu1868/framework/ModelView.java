@@ -1,25 +1,21 @@
 package etu1868.framework;
 
-import java.util.HashMap;
+import java.util.*;
 
-public class ModelView {
-    HashMap <String, Object> datas;
+public class Modelview {
     String view;
-    public ModelView(String view) {
-        setView(view);
+    HashMap<String, Object> datas;
+
+    public Modelview (String view){
+        this.view = view;
+        datas = new HashMap<>();
     }
-    public ModelView (String view, HashMap <String, Object> datas)
-    {
-        setView(view);
-        setDatas(datas);
+
+    public void addItem(String key, Object item) {
+        datas.put(key, item);
     }
     
-    public HashMap<String, Object> getDatas() {
-        return datas;
-    }
-    public void setDatas(HashMap<String, Object> datas) {
-        this.datas = datas;
-    }
+    // GETTERS AND SETTERS
     public String getView() {
         return view;
     }
@@ -27,15 +23,11 @@ public class ModelView {
         this.view = view;
     }
 
-    public void addItem (String key, Object value) throws Exception
-    {
-        if(this.getDatas()!=null)
-        {
-            this.getDatas().put(key, value);
-        }
-        else
-        {
-            throw new Exception(this.getClass().getSimpleName()+" : datas (HashMap<String key, Object value>) is Null");
-        }
+    public HashMap<String, Object> getDatas() {
+        return datas;
+    }
+
+    public void setDatas(HashMap<String, Object> datas) {
+        this.datas = datas;
     }
 }

@@ -1,63 +1,67 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
 import annotation.*;
-import etu1868.framework.ModelView;
+import etu1868.framework.*;
 
 public class Emp {
-
     int id;
-    String nom;
 
-    public Emp(int id,String nom){this.setId(id);this.setNom(nom);}
+    String name;
+
+    public Emp () {
+
+    }
     
-    public int getId()
-    {
-        return this.id;
-    }
-    public void setId(int id)
-    {
-        this.id = id;
+
+    public Emp(String name) {
+        this.name = name;
     }
 
-    public String getNom()
-    {
-        return this.nom;
-    }
-    public void setNom(String nom)
-    {
-        this.nom = nom;
-    }
 
-    @Url("Emp-test")
-    public static ModelView test(){
-        ModelView view = new ModelView("test.jsp");
-
-        return view;
+    @Url(value = "getEmp.do")
+    public static Modelview findAll() {
+        System.out.println("hello world !!");
+        Modelview mv = new Modelview("Hello.jsp");
+        List<Emp> liste = new ArrayList<>();
+        liste.add(new Emp("Jean"));
+        liste.add(new Emp("Jeanne"));
+        liste.add(new Emp("Rakoto"));
+        mv.addItem("list", liste);
+        return mv;
     }
-
-    @Url("Emp-findAll")
-    public static ModelView findAll() {
-        HashMap <String, Object> data = new HashMap<>();
-        Emp Jean1 = new Emp(1,"Jean1");
-        Emp Jean2 = new Emp(2,"Jean2");
-        Emp Jean3 = new Emp(3,"Jean3");
-        List<Emp> list = new ArrayList<>();
-        list.add(Jean1);
-        list.add(Jean2);
-        list.add(Jean3);
-        data.put("list", list);
-        ModelView mv = new ModelView("list.jsp",data);
+    @Url(value = "save.do")
+    public Modelview save(){
+        Modelview mv = new Modelview("result.jsp");
+        mv.addItem("my_object", this);
+        
         return mv;
     }
 
-    @Url("Emp-getName")
-    public static ModelView getName(){
-        ModelView view = new ModelView("Name.jsp");
-
-        return view;
+    @Url(value = "test.do", param_name = "nom,poids")
+    public Modelview test(String nom, double poids) {
+        Modelview mv = new Modelview("result_arg.jsp");
+        mv.addItem("nom", nom);
+        mv.addItem("poids", poids);
+        return mv;
     }
+
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
 }
