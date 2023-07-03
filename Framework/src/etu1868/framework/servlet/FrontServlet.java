@@ -1,6 +1,7 @@
 package etu1868.framework.servlet;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import jakarta.servlet.*;
@@ -36,6 +37,30 @@ public class FrontServlet extends HttpServlet {
             if(mappingUrls.containsKey(param)){
                 Mapping mapping = mappingUrls.get(param);
                 Class<?> cls = Class.forName(mapping.getClassName());
+                Object o = cls.getDeclaredConstructor().newInstance();
+                Field[] fields = o.getClass().getDeclaredFields();
+                String fieldname;
+                String field_val;
+                Object [] paramValue;
+                Class<?> [] paramType;
+                for (Field f : fields)
+                {
+                    fieldname = f.getName();
+                    fieldname = req.getParameter(fieldname);
+                    String name = fieldname.substring(3 ,1).toUpperCase() + fieldname.substring(1);
+                }
+                if(field_val!=null)
+                {
+                    try 
+                    {
+                        Method m = cls.getMethod(fieldname, paramType);
+                        m.invoke(o, paramValue);
+                    } 
+                    catch (Exception e) 
+                    {
+                        e.printStackTrace();
+                    }
+                }
                 Object value = cls.getMethod(mapping.getMethod()).invoke( null);
                 if (value instanceof ModelView) {
                     ModelView view = (ModelView) value;
@@ -50,7 +75,7 @@ public class FrontServlet extends HttpServlet {
                             req.setAttribute(k,view.getDatas().get(k));
                         }
                     }
-                    req.getRequestDispatcher(view.getView()).forward(req, res);
+                    // req.getRequestDispatcher(view.getView()).forward(req, res);
                 }
             }
             else{
