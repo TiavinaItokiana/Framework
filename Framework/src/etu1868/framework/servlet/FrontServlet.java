@@ -39,6 +39,17 @@ public class FrontServlet extends HttpServlet {
                 Object value = cls.getMethod(mapping.getMethod()).invoke( null);
                 if (value instanceof ModelView) {
                     ModelView view = (ModelView) value;
+                    if(view.getDatas()!=null)
+                    {
+                        for (String k : view.getDatas().keySet())
+                        {
+                            out.println("------------------------------");
+                            out.println("key : "+k);
+                            out.println("value : "+view.getDatas().get(k));
+                            out.println("------------------------------");
+                            req.setAttribute(k,view.getDatas().get(k));
+                        }
+                    }
                     req.getRequestDispatcher(view.getView()).forward(req, res);
                 }
             }
