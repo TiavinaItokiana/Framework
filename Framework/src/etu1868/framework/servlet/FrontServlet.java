@@ -1,102 +1,84 @@
 package etu1868.framework.servlet;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import utilitaire.Utilitaire;
+import helper_classes.*;
 import etu1868.framework.*;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.lang.reflect.Method;
+import java.sql.SQLException;
+import java.util.*;
 
 public class FrontServlet extends HttpServlet {
+    HashMap<String, Mapping> MappingUrls; 
 
-    HashMap<String,Mapping> mappingUrls;
-
-    public void init() throws ServletException {
+    @Override
+    public void init() throws ServletException{
+        this.MappingUrls = new HashMap<String, Mapping>();
         ServletContext context = getServletContext();
-        String contextPath = context.getRealPath("/");
-        System.out.println("context Path : "+contextPath);
-        try {
-            mappingUrls = utilitaire.Package.scanPackages(contextPath);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e);
+        String absolutePath = context.getRealPath("/WEB-INF/classes");
+        File workspace = new File(absolutePath);
+        String[] test=workspace.list();
+        for (String packageName : test) {
+            String packagePath = absolutePath+'\\'+packageName;
+            PackageClasse.checkMethod(packagePath,packageName, this.MappingUrls);
         }
     }
-  
-
-    protected void processRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        PrintWriter out = res.getWriter();
-        String param = Utilitaire.getUrl(String.valueOf(req.getRequestURL()));
     
-        try {
-            if(mappingUrls.containsKey(param)){
-                Mapping mapping = mappingUrls.get(param);
-                Class<?> cls = Class.forName(mapping.getClassName());
-                Object o = cls.getDeclaredConstructor().newInstance();
-                Field[] fields = o.getClass().getDeclaredFields();
-                String fieldname;
-                String field_val;
-                Object [] paramValue;
-                Class<?> [] paramType;
-                for (Field f : fields)
-                {
-                    fieldname = f.getName();
-                    fieldname = req.getParameter(fieldname);
-                    String name = fieldname.substring(3 ,1).toUpperCase() + fieldname.substring(1);
-                }
-                if(field_val!=null)
-                {
-                    try 
-                    {
-                        Method m = cls.getMethod(fieldname, paramType);
-                        m.invoke(o, paramValue);
-                    } 
-                    catch (Exception e) 
-                    {
-                        e.printStackTrace();
-                    }
-                }
-                Object value = cls.getMethod(mapping.getMethod()).invoke( null);
-                if (value instanceof ModelView) {
-                    ModelView view = (ModelView) value;
-                    if(view.getDatas()!=null)
-                    {
-                        for (String k : view.getDatas().keySet())
-                        {
-                            out.println("------------------------------");
-                            out.println("key : "+k);
-                            out.println("value : "+view.getDatas().get(k));
-                            out.println("------------------------------");
-                            req.setAttribute(k,view.getDatas().get(k));
-                        }
-                    }
-                    // req.getRequestDispatcher(view.getView()).forward(req, res);
-                }
-            }
-            else{
-                if (param=="") {
-                    out.println("salut");
-                }else{
-                    out.println("can not find : "+param);
-                }
-            }
-        } catch (Exception e) {
-            throw new ServletException(e);
+
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        PrintWriter out = response.getWriter();
+        
+        if (request.getMethod().equals("GET")) {
+            out.println("Method GET");
+        } else if (request.getMethod().equals("POST")) {
+            out.println("Method POST");
+        } else {
+            // Si la méthode HTTP n'est ni GET ni POST, on renvoie une erreur "Méthode non autorisée"
+            out.println("Methode non reconnu");
         }
-        
-
+        processRequest(request, response);
     }
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        this.processRequest(req, res);
-        
-    } 
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-       this.processRequest(req, res);
-   }
-}
+    protected void processRequest (HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        PrintWriter out = res.getWriter();
+        String url = String.valueOf(req.getRequestURL());
+        String parameter_url = Util.getParamURL(url);
+        String method = req.getMethod();
 
+        out.println("URL : "+url);
+        out.println("MAPPING :"+this.MappingUrls.toString());
+        out.println("Parameter url : "+parameter_url);
+        HashMap<String, Mapping> hashMap = this.MappingUrls;
+        Mapping mapping = hashMap.get(parameter_url);
+        if (mapping != null) {
+            out.println("Value of "+parameter_url+": ");
+            out.println("\t ClassName : "+mapping.getClassName());
+            out.println("\t Method : "+mapping.getMethod());
+
+            try {
+                Class<?> cls = Class.forName(mapping.getClassName());
+                Object value = Util.invokeMethod(req, mapping);
+                Modelview view = (Modelview) value;
+                this.setDatas(req, view);
+                req.getRequestDispatcher(view.getView()).forward(req, res);
+                
+                /*if (value instanceof Modelview) {
+                    Modelview myview = (Modelview) value;
+                    req.getRequestDispatcher(myview.getView()).forward(req,res);
+                }*/
+            } catch (Exception e) {
+                out.println(e);
+            }
+        } else {
+            out.println("The url `"+parameter_url+"` is not defined");
+        }
+    }
+
+    public void setDatas(HttpServletRequest req, Modelview view) {
+        HashMap<String, Object> datas = view.getDatas();
+        for (String key : datas.keySet()) {
+            req.setAttribute(key, datas.get(key));
+        }
+    }
+    
+}
