@@ -17,7 +17,7 @@ public class Utilitaire
         {
             param = temp;
         }
-        System.out.println(temp);
+        System.out.println(param);
         return param;
     }
 }
