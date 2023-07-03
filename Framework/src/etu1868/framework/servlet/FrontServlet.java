@@ -1,72 +1,66 @@
 package etu1868.framework.servlet;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.lang.reflect.Method;
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import utilitaire.Utilitaire;
+import etu1868.framework.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import etu1868.framework.Mapping;
-import etu1868.framework.ModelView;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import utilitaire.*;
-/**
- * FrontServlet
- */
+
 public class FrontServlet extends HttpServlet {
 
-    HashMap<String, Mapping> MappingUrls;
-    
+    HashMap<String,Mapping> mappingUrls;
+
     public void init() throws ServletException {
         ServletContext context = getServletContext();
         String contextPath = context.getRealPath("/");
         System.out.println("context Path : "+contextPath);
         try {
-            MappingUrls = utilitaire.Package.scanPackages(contextPath);
+            mappingUrls = utilitaire.Package.scanPackages(contextPath);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e);
         }
     }
+  
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        processRequest(request, response);
-    }
+    protected void processRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        PrintWriter out = res.getWriter();
+        String param = Utilitaire.getUrl(String.valueOf(req.getRequestURL()));
     
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        processRequest(request, response);
-    }
-
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        PrintWriter out = response.getWriter();
-        String url = String.valueOf(request.getRequestURL());
-        out.println("URL: "+url);
-        out.println("--------------------------------");
-        out.println("Parameter URL : "+Utilitaire.getURLParameter(String.valueOf(request.getRequestURL())));
-        // for (Map.Entry<String,Mapping> entry : MappingUrls.entrySet()){
-        //     String cle = entry.getKey();
-        //     Mapping value = entry.getValue();
-        //     out.println("cle : "+cle+ " , Class Name : "+ value.getClassName()+" ----- Method Name : "+value.getMethod());
-        // }
-        String param = Utilitaire.getURLParameter(String.valueOf(request.getRequestURL()));
-        try 
-        {
-            if(MappingUrls.containsKey(param))
-            {
-                Mapping mapping = MappingUrls.get(param);
+        try {
+            if(mappingUrls.containsKey(param)){
+                Mapping mapping = mappingUrls.get(param);
                 Class<?> cls = Class.forName(mapping.getClassName());
-                Object val = cls.getMethod(mapping.getMethod()).invoke( null);
-                if(val instanceof ModelView)
-                {
-                    ModelView view = (ModelView) val;
-                    request.getRequestDispatcher(view.getView()).forward(request,response);
+                Object value = cls.getMethod(mapping.getMethod()).invoke( null);
+                if (value instanceof ModelView) {
+                    ModelView view = (ModelView) value;
+                    req.getRequestDispatcher(view.getView()).forward(req, res);
+                }
+            }
+            else{
+                if (param=="") {
+                    out.println("salut");
+                }else{
+                    out.println("can not find : "+param);
                 }
             }
         } catch (Exception e) {
-            System.out.println(e);
+            throw new ServletException(e);
         }
+        
+
     }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        this.processRequest(req, res);
+        
+    } 
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+       this.processRequest(req, res);
+   }
 }
+
