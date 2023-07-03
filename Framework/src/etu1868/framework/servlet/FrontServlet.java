@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import etu1868.framework.Mapping;
+import etu1868.framework.ModelView;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import utilitaire.*;
@@ -15,7 +16,7 @@ import utilitaire.*;
 public class FrontServlet extends HttpServlet {
 
     HashMap<String, Mapping> MappingUrls;
-
+    
     public void init() throws ServletException {
         ServletContext context = getServletContext();
         String contextPath = context.getRealPath("/");
@@ -45,10 +46,27 @@ public class FrontServlet extends HttpServlet {
         out.println("URL: "+url);
         out.println("--------------------------------");
         out.println("Parameter URL : "+Utilitaire.getURLParameter(String.valueOf(request.getRequestURL())));
-        for (Map.Entry<String,Mapping> entry : MappingUrls.entrySet()){
-            String cle = entry.getKey();
-            Mapping value = entry.getValue();
-            out.println("cle : "+cle+ " , Class Name : "+ value.getClassName()+" ----- Method Name : "+value.getMethod());
+        // for (Map.Entry<String,Mapping> entry : MappingUrls.entrySet()){
+        //     String cle = entry.getKey();
+        //     Mapping value = entry.getValue();
+        //     out.println("cle : "+cle+ " , Class Name : "+ value.getClassName()+" ----- Method Name : "+value.getMethod());
+        // }
+        String param = Utilitaire.getURLParameter(String.valueOf(request.getRequestURL()));
+        try 
+        {
+            if(MappingUrls.containsKey(param))
+            {
+                Mapping mapping = MappingUrls.get(param);
+                Class<?> cls = Class.forName(mapping.getClassName());
+                Object val = cls.getMethod(mapping.getMethod()).invoke( null);
+                if(val instanceof ModelView)
+                {
+                    ModelView view = (ModelView) val;
+                    request.getRequestDispatcher(view.getView()).forward(request,response);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 }
